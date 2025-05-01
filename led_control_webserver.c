@@ -19,8 +19,8 @@
 #include "lwip/netif.h"          // Lightweight IP stack - fornece funções e estruturas para trabalhar com interfaces de rede (netif)
 
 // Credenciais WIFI - Tome cuidado se publicar no github!
-#define WIFI_SSID "Ricardo"
-#define WIFI_PASSWORD "renata1987"
+#define WIFI_SSID "SEU_SSID"
+#define WIFI_PASSWORD "SUA_SENHA"
 
 // Definição dos pinos dos LEDs
 #define LED_PIN CYW43_WL_GPIO_LED_PIN   // GPIO do CI CYW43
