@@ -6,9 +6,9 @@
  * https://www.raspberrypi.com/documentation/pico-sdk/networking.html#group_pico_cyw43_arch_1ga33cca1c95fc0d7512e7fef4a59fd7475 
  */
 
-#include <stdio.h>          // Biblioteca padrão para entrada e saída
-#include <string.h>         // Biblioteca manipular strings
-#include <stdlib.h>         // funções para realizar várias operações, incluindo alocação de memória dinâmica (malloc)
+#include <stdio.h>               // Biblioteca padrão para entrada e saída
+#include <string.h>              // Biblioteca manipular strings
+#include <stdlib.h>              // funções para realizar várias operações, incluindo alocação de memória dinâmica (malloc)
 
 #include "pico/stdlib.h"         // Biblioteca da Raspberry Pi Pico para funções padrão (GPIO, temporização, etc.)
 #include "hardware/adc.h"        // Biblioteca da Raspberry Pi Pico para manipulação do conversor ADC
@@ -115,7 +115,8 @@ int main()
         * Este método deve ser chamado periodicamente a partir do ciclo principal 
         * quando se utiliza um estilo de sondagem pico_cyw43_arch 
         */
-        cyw43_arch_poll();
+        cyw43_arch_poll(); // Necessário para manter o Wi-Fi ativo
+        sleep_ms(100);      // Reduz o uso da CPU
     }
 
     //Desligar a arquitetura CYW43.
