@@ -77,7 +77,13 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(led_control_webserver led_control_webserver.c )
+add_executable(led_control_webserver src/main.c 
+    src/modos.c 
+    src/webserver.c
+    lib/buzzer.c 
+    lib/matriz_led.c 
+    lib/ssd1306.c
+)
 
 pico_set_program_name(led_control_webserver "led_control_webserver")
 pico_set_program_version(led_control_webserver "0.1")
@@ -86,17 +92,27 @@ pico_set_program_version(led_control_webserver "0.1")
 pico_enable_stdio_uart(led_control_webserver 0)
 pico_enable_stdio_usb(led_control_webserver 1)
 
+# Generate PIO header
+pico_generate_pio_header(led_control_webserver ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
+
+
 # Add the standard library to the build
 target_link_libraries(led_control_webserver
         pico_stdlib
         hardware_gpio
         hardware_adc
         pico_cyw43_arch_lwip_threadsafe_background
+        pico_stdlib 
+        hardware_i2c
+        hardware_pwm
+        hardware_pio
+        hardware_clocks
 )
 
 # Add the standard include files to the build
 target_include_directories(led_control_webserver PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/include
     ${PICO_SDK_PATH}/lib/lwip/src/include
     ${PICO_SDK_PATH}/lib/lwip/src/include/arch
     ${PICO_SDK_PATH}/lib/lwip/src/include/lwip
