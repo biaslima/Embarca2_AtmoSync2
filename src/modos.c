@@ -1,60 +1,117 @@
-#include "modos.h"
-#include "buzzer.h"
-#include "ssd1306.h"
-#include "matriz_led.h"
+//Bibliotecas de apoio
+#include "lib/buzzer/buzzer.h"
+#include "lib/matriz/matriz_led.h"
+#include "lib/display/ssd1306.h"
+#include "include/modos.h"
+#include "setup.h"
+#include <stdio.h>               
+#include <string.h>              
+#include <stdlib.h>   
 
-// Variável de display global (você pode mover isso para main se preferir)
-extern ssd1306_t oled_display;
+// Definição da variável global declarada como extern em modos.h
+ModoSistema modo_atual = MODO_CONFORTO;
 
-void atualiza_display() {
-    ssd1306_fill(&oled_display, false);  // limpa tela
+//Define o modo atual no sistema
+void set_modo(ModoSistema novo_modo) { 
+    modo_atual = novo_modo;
+
     switch (modo_atual) {
-        case MODO_NORMAL:
-            ssd1306_draw_string(&oled_display, "Modo: Normal", 0, 0);
+        case MODO_CONFORTO:
+            printf("Modo atual: Conforto\n");
             break;
         case MODO_FESTA:
-            ssd1306_draw_string(&oled_display, "Modo: Festa!", 0, 0);
+            printf("Modo atual: Festa\n");
             break;
         case MODO_SEGURANCA:
-            ssd1306_draw_string(&oled_display, "Modo: Seguranca", 0, 0);
+            printf("Modo atual: Segurança\n");
             break;
         case MODO_SONO:
-            ssd1306_draw_string(&oled_display, "Modo: Sono", 0, 0);
+            printf("Modo atual: Sono\n");
             break;
     }
-    ssd1306_send_data(&oled_display);
+    atualiza_display();
+    atualiza_matriz_leds();
+    atualiza_buzzer();
+    atualiza_rgb_led();
 }
 
+// ===========Funções de periféricos=================
+//Atualiza o buzzer de acordo com o modo
 void atualiza_buzzer() {
     switch (modo_atual) {
-        case MODO_NORMAL:
+        case MODO_CONFORTO:
         case MODO_SEGURANCA:
         case MODO_SONO:
             buzzer_desliga(BUZZER_PIN);
             break;
         case MODO_FESTA:
-            tocar_frequencia(440, 200);
+            tocar_frequencia(440, 150);
             break;
     }
 }
 
-void atualiza_matriz_leds() {
+//Atualiza o display de acordo com o modo
+void atualiza_display() {
+    ssd1306_fill(&ssd, false);
     switch (modo_atual) {
-        case MODO_NORMAL:
-            // exemplo: exibir um padrão estável
-            exibir_padrao(0); // ajustar na sua função
+        case MODO_CONFORTO:
+            ssd1306_draw_string(&ssd, "Modo: Conforto", 0, 0);
             break;
         case MODO_FESTA:
-            // usar padrão animado, se tiver
-            exibir_padrao(1);
+            ssd1306_draw_string(&ssd, "Modo: Festa", 0, 0);
             break;
         case MODO_SEGURANCA:
-            // padrão de presença
-            exibir_padrao(2);
+            ssd1306_draw_string(&ssd, "Modo: Seguranca", 0, 0);
             break;
         case MODO_SONO:
-            clear_matrix(pio0, 0); // ou algo em azul
+            ssd1306_draw_string(&ssd, "Modo: Sono", 0, 0);
+            break;
+    }
+    ssd1306_send_data(&ssd);
+}
+
+//Atualizar matriz de LED de acordo com o modo
+void atualiza_matriz_leds() {
+    switch (modo_atual) {
+        case MODO_CONFORTO:
+            exibir_padrao(0); // verde?
+            break;
+        case MODO_FESTA:
+            exibir_padrao(1); // animado
+            break;
+        case MODO_SEGURANCA:
+            exibir_padrao(2); // vermelho ou alerta
+            break;
+        case MODO_SONO:
+            clear_matrix(pio0, 0);
             update_leds(pio0, 0);
+            break;
+    }
+}
+
+//Atualizar LED RGB de acordo com modo
+void atualiza_rgb_led() {
+    // Implementação da função de LED RGB
+    switch (modo_atual) {
+        case MODO_CONFORTO:
+            gpio_put(LED_GREEN_PIN, true);
+            gpio_put(LED_RED_PIN, false);
+            gpio_put(LED_BLUE_PIN, false);
+            break;
+        case MODO_FESTA:
+            gpio_put(LED_GREEN_PIN, false);
+            gpio_put(LED_RED_PIN, false);
+            gpio_put(LED_BLUE_PIN, true);
+            break;
+        case MODO_SEGURANCA:
+            gpio_put(LED_GREEN_PIN, false);
+            gpio_put(LED_RED_PIN, true);
+            gpio_put(LED_BLUE_PIN, false);
+            break;
+        case MODO_SONO:
+            gpio_put(LED_GREEN_PIN, false);
+            gpio_put(LED_RED_PIN, false);
+            gpio_put(LED_BLUE_PIN, false);
             break;
     }
 }

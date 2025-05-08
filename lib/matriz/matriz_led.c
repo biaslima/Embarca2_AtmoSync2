@@ -5,42 +5,9 @@
 uint32_t leds[NUM_LEDS];
 PIO pio = pio0;
 int sm = 0;
-uint8_t coracao_cor = 0;
 
-// Padrões pra matriz
-const uint8_t padrao_alerta[5][5] = {
-    {0, 1, 1, 1, 0},
-    {1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1},
-    {0, 1, 1, 1, 0}
-};
 
-const uint8_t padrao_verde[5][5] = {
-    {0, 0, 0, 1, 0},
-    {0, 0, 1, 0, 1},
-    {0, 1, 0, 0, 0},
-    {1, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0}
-};
-
-const uint8_t padrao_amarelo[5][5] = {
-    {0, 0, 1, 0, 0},
-    {0, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0},
-    {0, 0, 1, 0, 0},
-    {0, 0, 1, 0, 0}
-};
-
-const uint8_t padrao_vermelho[5][5] = {
-    {1, 0, 0, 0, 1},
-    {0, 1, 0, 1, 0},
-    {0, 0, 1, 0, 0},
-    {0, 1, 0, 1, 0},
-    {1, 0, 0, 0, 1}
-};
-
-void iniciar_matriz_leds(PIO pio_inst, uint sm_num, uint pin) {
+void matrix_init(PIO pio_inst, uint sm_num, uint pin) {
     pio = pio_inst;
     sm = sm_num;
     
@@ -86,6 +53,39 @@ void update_leds(PIO pio_inst, uint sm_num) {
         pio_sm_put_blocking(pio_inst, sm_num, leds[i] << 8u);
     }
 }
+
+// Implementação completa da função exibir_padrao
 void exibir_padrao(uint8_t padrao) {
     clear_matrix(pio, sm);
+    
+    // Diferentes padrões para cada modo
+    switch(padrao) {
+        case 0: // Modo Conforto (verde)
+            for (int i = 0; i < NUM_LEDS; i++) {
+                leds[i] = create_color(64, 0, 0); // Verde suave
+            }
+            break;
+        case 1: // Modo Festa (cores variadas)
+            for (int i = 0; i < NUM_LEDS; i++) {
+                // Cores aleatórias para efeito festa
+                if (i % 3 == 0) {
+                    leds[i] = create_color(0, 64, 0); // Vermelho
+                } else if (i % 3 == 1) {
+                    leds[i] = create_color(0, 0, 64); // Azul
+                } else {
+                    leds[i] = create_color(64, 64, 0); // Amarelo
+                }
+            }
+            break;
+        case 2: // Modo Segurança (vermelho)
+            for (int i = 0; i < NUM_LEDS; i++) {
+                leds[i] = create_color(0, 64, 0); // Vermelho
+            }
+            break;
+        default:
+            // Modo desligado/sono - já limpamos acima
+            break;
+    }
+    
+    update_leds(pio, sm);
 }

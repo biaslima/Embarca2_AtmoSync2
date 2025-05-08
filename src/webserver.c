@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "pico/stdlib.h"
+#include "hardware/adc.h"
+#include "pico/cyw43_arch.h"
+
+#include "lwip/pbuf.h"
+#include "lwip/tcp.h"
+#include "lwip/netif.h"
+
+#include "include/webserver.h"
+#include "include/modos.h"
+#include "setup.h"
+
+// Leitura da temperatura interna
+float temp_read(void) {
+    adc_select_input(4);
+    uint16_t raw_value = adc_read();
+    const float conversion_factor = 3.3f / (1 << 12);
+    float temperature = 27.0f - ((raw_value * conversion_factor) - 0.706f) / 0.001721f;
+    return temperature;
+}
+
+// Tratamento do request do usuário
+void user_request(char **request) {
+    if (strstr(*request, "GET /modo_conforto") != NULL) {
+        set_modo(MODO_CONFORTO);
+    }
+    else if (strstr(*request, "GET /modo_festa") != NULL) {
+        set_modo(MODO_FESTA);
+    }
+    else if (strstr(*request, "GET /modo_seguranca") != NULL) {
+        set_modo(MODO_SEGURANCA);
+    }
+    else if (strstr(*request, "GET /modo_sono") != NULL) {
+        set_modo(MODO_SONO);
+    }
+}
+
+// Função de callback para processar requisições HTTP
+err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) {
+    if (!p) {
+        tcp_close(tpcb);
+        tcp_recv(tpcb, NULL);
+        return ERR_OK;
+    }
+
+    // Alocação do request na memória dinâmica
+    char *request = (char *)malloc(p->len + 1);
+    memcpy(request, p->payload, p->len);
+    request[p->len] = '\0';
+
+    printf("Request: %s\n", request);
+
+    // Tratamento de request - Controle dos LEDs
+    user_request(&request);
+    
+    // Leitura da temperatura interna
+    float temperature = temp_read();
+
+    // Cria a resposta HTML
+    char html[1024];
+
+    // Instruções html do webserver
+    snprintf(html, sizeof(html),
+             "HTTP/1.1 200 OK\r\n"
+             "Content-Type: text/html\r\n"
+             "\r\n"
+             "<!DOCTYPE html>\n"
+             "<html>\n"
+             "<head>\n"
+             "<title> Embarcatech - LED Control </title>\n"
+             "<style>\n"
+             "body { background-color: #b5e5fb; font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }\n"
+             "h1 { font-size: 64px; margin-bottom: 30px; }\n"
+             "button { background-color: LightGray; font-size: 36px; margin: 10px; padding: 20px 40px; border-radius: 10px; }\n"
+             ".temperature { font-size: 48px; margin-top: 30px; color: #333; }\n"
+             "</style>\n"
+             "</head>\n"
+             "<body>\n"
+             "<h1>AtmoSync</h1>\n"
+             "<h2>Selecione o modo:</h1>\n"
+             "<form action=\"./modo_conforto\"><button>Modo Conforto</button></form>\n"
+             "<form action=\"./modo_festa\"><button>Modo Festa</button></form>\n"
+             "<form action=\"./modo_seguranca\"><button>Modo Segurança</button></form>\n"
+             "<form action=\"./modo_sono\"><button>Modo Sono</button></form>\n"
+             "<p class=\"temperature\">Temperatura Interna: %.2f &deg;C</p>\n"
+             "</body>\n"
+             "</html>\n",
+             temperature);
+
+    // Escreve dados para envio
+    tcp_write(tpcb, html, strlen(html), TCP_WRITE_FLAG_COPY);
+
+    // Envia a mensagem
+    tcp_output(tpcb);
+
+    // Libera memória alocada dinamicamente
+    free(request);
+    
+    // Libera o buffer de pacote
+    pbuf_free(p);
+
+    return ERR_OK;
+}
+
+// Função de callback ao aceitar conexões TCP
+err_t tcp_server_accept(void *arg, struct tcp_pcb *newpcb, err_t err) {
+    tcp_recv(newpcb, tcp_server_recv);
+    return ERR_OK;
+}
+
+// Inicializa o servidor web
+void webserver_init(void) {
+    // Configura servidor TCP
+    struct tcp_pcb *server = tcp_new();
+    if (!server || tcp_bind(server, IP_ADDR_ANY, 80) != ERR_OK) {
+        printf("Erro ao criar servidor\n");
+        return;
+    }
+    server = tcp_listen(server);
+    tcp_accept(server, tcp_server_accept);
+    printf("Servidor ouvindo na porta 80\n");
+}

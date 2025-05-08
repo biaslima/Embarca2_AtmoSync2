@@ -1,10 +1,9 @@
 #ifndef MODOS_H
 #define MODOS_H
 
-#include "ssd1306.h"
-
+// Tipos de modo do sistema
 typedef enum {
-    MODO_NORMAL,
+    MODO_CONFORTO,
     MODO_FESTA,
     MODO_SEGURANCA,
     MODO_SONO
@@ -12,9 +11,12 @@ typedef enum {
 
 extern ModoSistema modo_atual;
 
-void atualiza_display();
-void atualiza_buzzer();
-void atualiza_matriz_leds();
-void atualiza_rgb_led(); // você ainda vai implementar
+// Protótipos das funções
+void set_modo(ModoSistema novo_modo);
+void atualiza_display(void);
+void atualiza_matriz_leds(void);
+void atualiza_buzzer(void);
+void atualiza_rgb_led(void);
+
 
 #endif
