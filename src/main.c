@@ -19,7 +19,7 @@
 #include "lib/display/ssd1306.h"
 #include "lib/matriz/matriz_led.h"
 #include "lib/buzzer/buzzer.h"
-#include "wifi_secrets.h"
+//#include "wifi_secrets.h"
 
 //Descomente as linhas abaixo e complete-as para fazer a conexão
 //#define WIFI_SSID "Sua rede"
