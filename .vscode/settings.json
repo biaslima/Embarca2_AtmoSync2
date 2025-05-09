@@ -39,6 +39,7 @@
   "files.associations": {
     "pio.h": "c",
     "ws2812.pio.h": "c",
-    "matriz_led.h": "c"
+    "matriz_led.h": "c",
+    "cyw43_arch.h": "c"
   }
 }

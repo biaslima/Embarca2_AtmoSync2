@@ -14,6 +14,15 @@
 #include "include/modos.h"
 #include "setup.h"
 
+// Leitura da temperatura interna
+float temp_read(void){
+    adc_select_input(4);
+    uint16_t raw_value = adc_read();
+    const float conversion_factor = 3.3f / (1 << 12);
+    float temperature = 27.0f - ((raw_value * conversion_factor) - 0.706f) / 0.001721f;
+        return temperature;
+}
+
 // Tratamento do request do usuário
 void user_request(char **request) {
     if (strstr(*request, "GET /modo_conforto") != NULL) {
@@ -48,6 +57,8 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
     // Tratamento de request - Controle dos LEDs
     user_request(&request);
 
+    float temperature = temp_read();
+    
     // Cria a resposta HTML
     char html[1024];
 
@@ -69,9 +80,10 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
             "<form action=\"./modo_sono\"><button>Modo Sono</button></form>"
             "<form action=\"./alternar_leds\"><button class=\"redondo\">On/Off Luz</button></form>"
             "<form action=\"./desligar_alarme\"><button class=\"redondo\">Desligar Alarme</button></form>"
-            "</body></html>"
-
-        );
+            "<p class=\"temperature\">Temperatura Interna: %.2f &deg;C</p>\n"
+             "</body>\n"
+             "</html>\n",
+             temperature);
 
     // Escreve dados para envio
     tcp_write(tpcb, html, strlen(html), TCP_WRITE_FLAG_COPY);
