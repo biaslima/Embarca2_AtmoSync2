@@ -3,10 +3,6 @@
 
 #include "lib/display/ssd1306.h"
 
-// Dados da rede Wi-Fi (ATENÇÃO: ALTERAR ANTES DE SUBIR NO GIT)
-#define WIFI_SSID "BRENO-2G"
-#define WIFI_PASSWORD "991773729"
-
 // Definição dos pinos dos LEDs
 #define LED_PIN CYW43_WL_GPIO_LED_PIN  
 #define LED_BLUE_PIN 12                 

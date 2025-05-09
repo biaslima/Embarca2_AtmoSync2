@@ -24,15 +24,12 @@ void buzzer_init(int pin) {
            pin, slice_num, channel);
 }
 
-// Liga o buzzer com um tom padrão
+// Liga o buzzer 
 void buzzer_liga(int pin) {
-    // O ciclo de clock do RP2040 é de 125MHz por padrão
     uint32_t clock = 125000000;
-    
-    // Frequência desejada (por exemplo, 440Hz para Lá)
     uint32_t freq = 440;
     
-    // Cálculo dos valores para o PWM
+    //PWM
     uint32_t wrap = clock / freq / 2;
     pwm_set_wrap(slice_num, wrap);
     pwm_set_chan_level(slice_num, PWM_CHAN_A, wrap / 2);

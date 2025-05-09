@@ -16,7 +16,4 @@ err_t tcp_server_accept(void *arg, struct tcp_pcb *newpcb, err_t err);
 // Função para processar requisições do usuário
 void user_request(char **request);
 
-// Função para ler a temperatura interna
-float temp_read(void);
-
 #endif

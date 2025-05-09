@@ -1,6 +1,9 @@
 #include "matriz_led.h"
 #include "hardware/pio.h"
 #include "ws2812.pio.h"
+#include <stdio.h>               
+#include <string.h>              
+#include <stdlib.h>  
 
 uint32_t leds[NUM_LEDS];
 PIO pio = pio0;
@@ -60,9 +63,9 @@ void exibir_padrao(uint8_t padrao) {
     
     // Diferentes padrões para cada modo
     switch(padrao) {
-        case 0: // Modo Conforto (verde)
+        case 0: // Modo Conforto 
             for (int i = 0; i < NUM_LEDS; i++) {
-                leds[i] = create_color(64, 0, 0); // Verde suave
+                leds[i] = create_color(10, 10, 5); // Luz amarelada
             }
             break;
         case 1: // Modo Festa (cores variadas)

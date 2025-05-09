@@ -74,13 +74,13 @@ void atualiza_display() {
 void atualiza_matriz_leds() {
     switch (modo_atual) {
         case MODO_CONFORTO:
-            exibir_padrao(0); // verde?
+            exibir_padrao(0);
             break;
         case MODO_FESTA:
-            exibir_padrao(1); // animado
+            exibir_padrao(1); 
             break;
         case MODO_SEGURANCA:
-            exibir_padrao(2); // vermelho ou alerta
+            exibir_padrao(2);
             break;
         case MODO_SONO:
             clear_matrix(pio0, 0);
