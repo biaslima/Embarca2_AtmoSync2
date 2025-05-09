@@ -14,15 +14,6 @@
 #include "include/modos.h"
 #include "setup.h"
 
-// Leitura da temperatura interna
-float temp_read(void) {
-    adc_select_input(4);
-    uint16_t raw_value = adc_read();
-    const float conversion_factor = 3.3f / (1 << 12);
-    float temperature = 27.0f - ((raw_value * conversion_factor) - 0.706f) / 0.001721f;
-    return temperature;
-}
-
 // Tratamento do request do usuário
 void user_request(char **request) {
     if (strstr(*request, "GET /modo_conforto") != NULL) {
@@ -56,40 +47,31 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
 
     // Tratamento de request - Controle dos LEDs
     user_request(&request);
-    
-    // Leitura da temperatura interna
-    float temperature = temp_read();
 
     // Cria a resposta HTML
     char html[1024];
 
     // Instruções html do webserver
     snprintf(html, sizeof(html),
-             "HTTP/1.1 200 OK\r\n"
-             "Content-Type: text/html\r\n"
-             "\r\n"
-             "<!DOCTYPE html>\n"
-             "<html>\n"
-             "<head>\n"
-             "<title> Embarcatech - LED Control </title>\n"
-             "<style>\n"
-             "body { background-color: #b5e5fb; font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }\n"
-             "h1 { font-size: 64px; margin-bottom: 30px; }\n"
-             "button { background-color: LightGray; font-size: 36px; margin: 10px; padding: 20px 40px; border-radius: 10px; }\n"
-             ".temperature { font-size: 48px; margin-top: 30px; color: #333; }\n"
-             "</style>\n"
-             "</head>\n"
-             "<body>\n"
-             "<h1>AtmoSync</h1>\n"
-             "<h2>Selecione o modo:</h1>\n"
-             "<form action=\"./modo_conforto\"><button>Modo Conforto</button></form>\n"
-             "<form action=\"./modo_festa\"><button>Modo Festa</button></form>\n"
-             "<form action=\"./modo_seguranca\"><button>Modo Segurança</button></form>\n"
-             "<form action=\"./modo_sono\"><button>Modo Sono</button></form>\n"
-             "<p class=\"temperature\">Temperatura Interna: %.2f &deg;C</p>\n"
-             "</body>\n"
-             "</html>\n",
-             temperature);
+            "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
+            "<title>AtmoSync</title>"
+            "<style>"
+            "body{background:#0075ac;font-family:sans-serif;text-align:center;margin-top:40px;color:#fff;}"
+            "h1{font-size:48px;margin:20px;}"
+            "button{background:#39a6ff;font-size:24px;margin:10px;padding:15px 25px;border-radius:100px;color:#fff;width: 300px;}"
+            ".redondo{background:#c00000;border-radius:500px;width: 150px;}"
+            "</style>"
+            "</head><body>"
+            "<h1>AtmoSync</h1><h2>Selecione o modo:</h2>"
+            "<form action=\"./modo_conforto\"><button>Modo Conforto</button></form>"
+            "<form action=\"./modo_festa\"><button>Modo Festa</button></form>"
+            "<form action=\"./modo_seguranca\"><button>Modo Segurança</button></form>"
+            "<form action=\"./modo_sono\"><button>Modo Sono</button></form>"
+            "<form action=\"./alternar_leds\"><button class=\"redondo\">On/Off Luz</button></form>"
+            "<form action=\"./desligar_alarme\"><button class=\"redondo\">Desligar Alarme</button></form>"
+            "</body></html>"
+
+        );
 
     // Escreve dados para envio
     tcp_write(tpcb, html, strlen(html), TCP_WRITE_FLAG_COPY);
