@@ -5,6 +5,7 @@
 #include <string.h>              
 #include <stdlib.h>  
 #include "include/modos.h"
+#include "pico/time.h"
 
 uint32_t leds[NUM_LEDS];
 PIO pio = pio0;
@@ -59,6 +60,24 @@ void update_leds(PIO pio_inst, uint sm_num) {
     }
 }
 
+void animacao_festa_loop() {
+    static uint32_t last_time = 0;
+    uint32_t current_time = to_ms_since_boot(get_absolute_time());
+
+    if (!leds_ativos || modo_atual != MODO_FESTA) return;
+
+    // Atualiza a cada 300ms
+    if (current_time - last_time >= 300) {
+        for (int i = 0; i < NUM_LEDS; i++) {
+            uint8_t r = rand() % 80;
+            uint8_t g = rand() % 80;
+            uint8_t b = rand() % 80;
+            leds[i] = create_color(g, r, b);
+        }
+        update_leds(pio, sm);
+        last_time = current_time;
+    }
+}
 // Implementação completa da função exibir_padrao
 void exibir_padrao(uint8_t padrao) {
     clear_matrix(pio, sm);

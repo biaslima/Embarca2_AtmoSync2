@@ -24,7 +24,6 @@ void set_modo(ModoSistema novo_modo) {
             break;
         case MODO_SEGURANCA:
             printf("Modo atual: Segurança\n");
-            alarme_ativo = true;
             break;
         case MODO_SONO:
             printf("Modo atual: Sono\n");

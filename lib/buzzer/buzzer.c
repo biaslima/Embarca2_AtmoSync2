@@ -3,12 +3,24 @@
 #include <stdio.h>               
 #include <string.h>              
 #include <stdlib.h>   
+#include "include/modos.h"
 
-
+//Variaveis globais
 static int buzzer_pin;
 static uint slice_num;
 static uint channel;
 bool alarme_ativo = false;
+
+//Notas para musiquinha
+#define NOTE_C4  261
+#define NOTE_D4  294
+#define NOTE_E4  329
+#define NOTE_G4  392
+#define NOTE_A4  440
+
+int melodia[] = { NOTE_C4, NOTE_D4, NOTE_E4, NOTE_C4 };
+int duracoes[] = { 300, 300, 300, 600 }; // em milissegundos
+const int tamanho_musica = sizeof(melodia) / sizeof(melodia[0]);
 
 void buzzer_init(int pin) {
     buzzer_pin = pin;
@@ -75,5 +87,22 @@ void alarme_loop() {
     if (current_time - ultima_execucao >= 600) {
         tocar_frequencia(600, 600); // 1000 Hz por 200 ms
         ultima_execucao = current_time;
+    }
+}
+
+void musica_festa_loop() {
+    static int nota_atual = 0;
+    static uint32_t ultima_execucao = 0;
+
+    if (modo_atual == MODO_FESTA) {
+        uint32_t agora = to_ms_since_boot(get_absolute_time());
+
+        if (agora - ultima_execucao >= duracoes[nota_atual]) {
+            tocar_frequencia(melodia[nota_atual], duracoes[nota_atual]);
+            ultima_execucao = agora;
+            nota_atual = (nota_atual + 1) % tamanho_musica; 
+        }
+    } else {
+        nota_atual = 0;
     }
 }

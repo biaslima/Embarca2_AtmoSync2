@@ -106,6 +106,8 @@ int main(){
         sleep_ms(100);
         alarme_loop();  // verifica se o alarme precisa tocar
         sleep_ms(10);       // Reduz o uso da CPU
+        animacao_festa_loop();
+        void musica_festa_loop();
     }
 
     //Desligar a arquitetura CYW43.

@@ -12,5 +12,6 @@ void buzzer_liga(int pin);
 void tocar_alarme();
 void desligar_alarme();
 void alarme_loop();
+void musica_festa_loop();
 
 #endif
