@@ -12,6 +12,8 @@
 
 #include "include/webserver.h"
 #include "include/modos.h"
+#include "lib/matriz/matriz_led.h"
+#include "lib/buzzer/buzzer.h"
 #include "setup.h"
 
 // Leitura da temperatura interna
@@ -36,6 +38,12 @@ void user_request(char **request) {
     }
     else if (strstr(*request, "GET /modo_sono") != NULL) {
         set_modo(MODO_SONO);
+    }
+    else if(strstr(*request, "GET /alternar_leds") != NULL) {
+       alternar_leds() ;
+    }
+    else if(strstr(*request, "GET /desligar_alarme") != NULL) {
+        desligar_alarme();
     }
 }
 

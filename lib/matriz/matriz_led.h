@@ -21,5 +21,6 @@ uint32_t create_color(uint8_t green, uint8_t red, uint8_t blue);
 void clear_matrix(PIO pio_inst, uint sm_num);
 void update_leds(PIO pio_inst, uint sm_num);
 void exibir_padrao(uint8_t padrao);
+void alternar_leds();
 
 #endif

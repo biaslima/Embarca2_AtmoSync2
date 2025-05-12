@@ -4,10 +4,12 @@
 #include <stdio.h>               
 #include <string.h>              
 #include <stdlib.h>  
+#include "include/modos.h"
 
 uint32_t leds[NUM_LEDS];
 PIO pio = pio0;
 int sm = 0;
+bool leds_ativos = true; 
 
 
 void matrix_init(PIO pio_inst, uint sm_num, uint pin) {
@@ -91,4 +93,37 @@ void exibir_padrao(uint8_t padrao) {
     }
     
     update_leds(pio, sm);
+}
+
+//Desliga a matriz de LEDs
+void alternar_leds() {
+        leds_ativos = !leds_ativos;
+    if (leds_ativos) {
+        // Precisamos saber qual modo está ativo para exibir o padrão correto
+        extern ModoSistema modo_atual; // Adicionar esta declaração para acessar o modo atual
+        
+        // Mapear o modo atual para o padrão correspondente
+        uint8_t padrao;
+        switch (modo_atual) {
+            case MODO_CONFORTO:
+                padrao = 0;
+                break;
+            case MODO_FESTA:
+                padrao = 1;
+                break;
+            case MODO_SEGURANCA:
+                padrao = 2;
+                break;
+            case MODO_SONO:
+            default:
+                padrao = 3; // Modo padrão desligado
+                break;
+        }
+        
+        exibir_padrao(padrao);
+    }
+    else {
+        clear_matrix(pio, sm);
+        update_leds(pio, sm);
+    }
 }

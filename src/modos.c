@@ -24,6 +24,7 @@ void set_modo(ModoSistema novo_modo) {
             break;
         case MODO_SEGURANCA:
             printf("Modo atual: Segurança\n");
+            alarme_ativo = true;
             break;
         case MODO_SONO:
             printf("Modo atual: Sono\n");
@@ -41,6 +42,11 @@ void atualiza_buzzer() {
     switch (modo_atual) {
         case MODO_CONFORTO:
         case MODO_SEGURANCA:
+            if (alarme_ativo) {
+                tocar_alarme();
+            } else {
+                buzzer_desliga(BUZZER_PIN);
+            }
         case MODO_SONO:
             buzzer_desliga(BUZZER_PIN);
             break;

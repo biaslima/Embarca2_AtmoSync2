@@ -19,7 +19,7 @@
 #include "lib/display/ssd1306.h"
 #include "lib/matriz/matriz_led.h"
 #include "lib/buzzer/buzzer.h"
-//#include "wifi_secrets.h"
+#include "wifi_secrets.h"
 
 //Descomente as linhas abaixo e complete-as para fazer a conexão
 //#define WIFI_SSID "Sua rede"
@@ -103,7 +103,9 @@ int main(){
 
     while (true){
         cyw43_arch_poll(); // Necessário para manter o Wi-Fi ativo
-        sleep_ms(100);      // Reduz o uso da CPU
+        sleep_ms(100);
+        alarme_loop();  // verifica se o alarme precisa tocar
+        sleep_ms(10);       // Reduz o uso da CPU
     }
 
     //Desligar a arquitetura CYW43.

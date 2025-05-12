@@ -8,6 +8,7 @@
 static int buzzer_pin;
 static uint slice_num;
 static uint channel;
+bool alarme_ativo = false;
 
 void buzzer_init(int pin) {
     buzzer_pin = pin;
@@ -53,4 +54,26 @@ void tocar_frequencia(int frequencia, int duracao_ms) {
     sleep_ms(duracao_ms);
     
     pwm_set_enabled(slice_num, false);
+}
+
+void tocar_alarme(){
+    alarme_ativo = true;
+}
+
+void desligar_alarme() {
+    alarme_ativo = false;
+    buzzer_desliga(buzzer_pin); 
+}
+
+void alarme_loop() {
+    static uint32_t ultima_execucao = 0;
+    uint32_t current_time = to_ms_since_boot(get_absolute_time());
+
+    if (!alarme_ativo) return;
+
+    // A cada 400ms, toca um bipe de 200ms
+    if (current_time - ultima_execucao >= 600) {
+        tocar_frequencia(600, 600); // 1000 Hz por 200 ms
+        ultima_execucao = current_time;
+    }
 }
