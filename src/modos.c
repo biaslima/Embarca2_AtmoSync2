@@ -9,8 +9,19 @@
 #include <stdlib.h>   
 
 // Definição da variável global declarada como extern em modos.h
+ssd1306_t ssd;
 ModoSistema modo_atual = MODO_CONFORTO;
 
+void executar_modulo_modos() {
+    set_modo(MODO_SONO);
+
+    while (true) {
+        alarme_loop();     // Se alarme ativo, toca
+        animacao_festa_loop(); // Animação do modo festa
+        musica_festa_loop();   // Música do modo festa
+        sleep_ms(100);
+    }
+}
 //Define o modo atual no sistema
 void set_modo(ModoSistema novo_modo) { 
     modo_atual = novo_modo;
@@ -24,6 +35,7 @@ void set_modo(ModoSistema novo_modo) {
             break;
         case MODO_SEGURANCA:
             printf("Modo atual: Segurança\n");
+            alarme_ativo = true;
             break;
         case MODO_SONO:
             printf("Modo atual: Sono\n");
@@ -105,7 +117,7 @@ void atualiza_rgb_led() {
             break;
         case MODO_FESTA:
             gpio_put(LED_GREEN_PIN, false);
-            gpio_put(LED_RED_PIN, false);
+            gpio_put(LED_RED_PIN, true);
             gpio_put(LED_BLUE_PIN, true);
             break;
         case MODO_SEGURANCA:
@@ -116,7 +128,7 @@ void atualiza_rgb_led() {
         case MODO_SONO:
             gpio_put(LED_GREEN_PIN, false);
             gpio_put(LED_RED_PIN, false);
-            gpio_put(LED_BLUE_PIN, false);
+            gpio_put(LED_BLUE_PIN, true);
             break;
     }
 }

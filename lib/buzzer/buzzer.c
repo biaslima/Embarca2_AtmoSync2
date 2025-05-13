@@ -90,19 +90,36 @@ void alarme_loop() {
     }
 }
 
+void buzzer_toca_nota(uint freq) {
+    uint32_t wrap = 1000000 / freq;
+    pwm_set_wrap(slice_num, wrap);
+    pwm_set_chan_level(slice_num, channel, wrap / 2);
+    pwm_set_enabled(slice_num, true);
+}
+
+void buzzer_para_nota() {
+    pwm_set_enabled(slice_num, false);
+}
+
 void musica_festa_loop() {
     static int nota_atual = 0;
-    static uint32_t ultima_execucao = 0;
+    static uint32_t tempo_inicio = 0;
+    static bool tocando = false;
 
-    if (modo_atual == MODO_FESTA) {
-        uint32_t agora = to_ms_since_boot(get_absolute_time());
-
-        if (agora - ultima_execucao >= duracoes[nota_atual]) {
-            tocar_frequencia(melodia[nota_atual], duracoes[nota_atual]);
-            ultima_execucao = agora;
-            nota_atual = (nota_atual + 1) % tamanho_musica; 
-        }
-    } else {
+    if (modo_atual != MODO_FESTA) {
+        buzzer_para_nota();  // Garante que o som pare
         nota_atual = 0;
+        tocando = false;
+        return;
+    } uint32_t agora = to_ms_since_boot(get_absolute_time());
+    if (!tocando) {
+        buzzer_toca_nota(melodia[nota_atual]);
+        tempo_inicio = agora;
+        tocando = true;
+    }
+    if (tocando && (agora - tempo_inicio >= duracoes[nota_atual])) {
+        buzzer_para_nota();
+        nota_atual = (nota_atual + 1) % tamanho_musica;
+        tocando = false;
     }
 }

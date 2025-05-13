@@ -83,7 +83,6 @@ add_executable(led_control_webserver src/main.c
     lib/display/ssd1306.c
     src/modos.c 
     src/webserver.c
-    src/globals.c
 )
 
 pico_set_program_name(led_control_webserver "led_control_webserver")

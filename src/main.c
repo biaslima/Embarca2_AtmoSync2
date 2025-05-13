@@ -103,11 +103,8 @@ int main(){
 
     while (true){
         cyw43_arch_poll(); // Necessário para manter o Wi-Fi ativo
+        executar_modulo_modos();
         sleep_ms(100);
-        alarme_loop();  // verifica se o alarme precisa tocar
-        sleep_ms(10);       // Reduz o uso da CPU
-        animacao_festa_loop();
-        void musica_festa_loop();
     }
 
     //Desligar a arquitetura CYW43.
