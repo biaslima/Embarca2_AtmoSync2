@@ -75,7 +75,7 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
             "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
             "<title>AtmoSync</title>"
             "<style>"
-            "body{background:#0075ac;font-family:sans-serif;text-align:center;margin-top:40px;color:#fff;}"
+            "body{background:#00334d;font-family:sans-serif;text-align:center;margin-top:40px;color:#fff;}"
             "h1{font-size:48px;margin:20px;}"
             "button{background:#39a6ff;font-size:24px;margin:10px;padding:15px 25px;border-radius:100px;color:#fff;width: 300px;}"
             ".redondo{background:#c00000;border-radius:500px;width: 150px;}"

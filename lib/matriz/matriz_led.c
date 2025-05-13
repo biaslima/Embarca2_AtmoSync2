@@ -12,7 +12,7 @@ PIO pio = pio0;
 int sm = 0;
 bool leds_ativos = true; 
 
-
+//Inicializa a matriz
 void matrix_init(PIO pio_inst, uint sm_num, uint pin) {
     pio = pio_inst;
     sm = sm_num;
@@ -54,12 +54,14 @@ void clear_matrix(PIO pio_inst, uint sm_num) {
     }
 }
 
+//Atauliza os LEDs
 void update_leds(PIO pio_inst, uint sm_num) {
     for (int i = 0; i < NUM_LEDS; i++) {
         pio_sm_put_blocking(pio_inst, sm_num, leds[i] << 8u);
     }
 }
 
+//Cria animação aleatória para modo festa
 void animacao_festa_loop() {
     static uint32_t last_time = 0;
     uint32_t current_time = to_ms_since_boot(get_absolute_time());
@@ -78,27 +80,15 @@ void animacao_festa_loop() {
         last_time = current_time;
     }
 }
-// Implementação completa da função exibir_padrao
+
+// Exibe padrão para modo específico
 void exibir_padrao(uint8_t padrao) {
     clear_matrix(pio, sm);
     
-    // Diferentes padrões para cada modo
     switch(padrao) {
         case 0: // Modo Conforto 
             for (int i = 0; i < NUM_LEDS; i++) {
-                leds[i] = create_color(10, 10, 5); // Luz amarelada
-            }
-            break;
-        case 1: // Modo Festa (cores variadas)
-            for (int i = 0; i < NUM_LEDS; i++) {
-                // Cores aleatórias para efeito festa
-                if (i % 3 == 0) {
-                    leds[i] = create_color(0, 64, 0); // Vermelho
-                } else if (i % 3 == 1) {
-                    leds[i] = create_color(0, 0, 64); // Azul
-                } else {
-                    leds[i] = create_color(64, 64, 0); // Amarelo
-                }
+                leds[i] = create_color(7, 20, 3); // Luz amarelada
             }
             break;
         case 2: // Modo Segurança (vermelho)
@@ -106,22 +96,21 @@ void exibir_padrao(uint8_t padrao) {
                 leds[i] = create_color(0, 64, 0); // Vermelho
             }
             break;
+
         default:
-            // Modo desligado/sono - já limpamos acima
             break;
     }
     
     update_leds(pio, sm);
 }
 
-//Desliga a matriz de LEDs
+//Alterna a matriz de LEDs
 void alternar_leds() {
-        leds_ativos = !leds_ativos;
+    leds_ativos = !leds_ativos;
+
     if (leds_ativos) {
-        // Precisamos saber qual modo está ativo para exibir o padrão correto
-        extern ModoSistema modo_atual; // Adicionar esta declaração para acessar o modo atual
+        extern ModoSistema modo_atual; 
         
-        // Mapear o modo atual para o padrão correspondente
         uint8_t padrao;
         switch (modo_atual) {
             case MODO_CONFORTO:

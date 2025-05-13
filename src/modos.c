@@ -12,8 +12,9 @@
 ssd1306_t ssd;
 ModoSistema modo_atual = MODO_CONFORTO;
 
+//Executa os loops do modos
 void executar_modulo_modos() {
-    set_modo(MODO_SONO);
+    set_modo(MODO_CONFORTO);
 
     while (true) {
         alarme_loop();     // Se alarme ativo, toca
@@ -22,6 +23,7 @@ void executar_modulo_modos() {
         sleep_ms(100);
     }
 }
+
 //Define o modo atual no sistema
 void set_modo(ModoSistema novo_modo) { 
     modo_atual = novo_modo;
@@ -108,7 +110,6 @@ void atualiza_matriz_leds() {
 
 //Atualizar LED RGB de acordo com modo
 void atualiza_rgb_led() {
-    // Implementação da função de LED RGB
     switch (modo_atual) {
         case MODO_CONFORTO:
             gpio_put(LED_GREEN_PIN, true);
