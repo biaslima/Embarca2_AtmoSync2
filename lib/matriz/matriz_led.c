@@ -135,3 +135,24 @@ void alternar_leds() {
         update_leds(pio, sm);
     }
 }
+
+void piscar_matriz_intruso() {
+    static uint32_t ultima_execucao = 0;
+    static bool ligada = false;
+    uint32_t agora = to_ms_since_boot(get_absolute_time());
+
+    if (agora - ultima_execucao > 500) {
+        if (ligada) {
+            clear_matrix(pio0, 0);
+        } else {
+            // Exibir padrão de alerta (vermelho intenso)
+            for (int i = 0; i < NUM_LEDS; i++) {
+                leds[i] = create_color(0, 255, 0); // Vermelho intenso
+            }
+        }
+        update_leds(pio0, 0);
+        ligada = !ligada;
+        ultima_execucao = agora;
+    }
+}
+

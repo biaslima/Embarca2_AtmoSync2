@@ -1,7 +1,8 @@
 // Bibliotecas padrão
 #include <stdio.h>               
 #include <string.h>              
-#include <stdlib.h>              
+#include <stdlib.h>           
+#include <time.h>
 
 // Bibliotecas da Pico e do driver Wi-Fi CYW43
 #include "pico/stdlib.h"         
@@ -19,7 +20,7 @@
 #include "lib/display/ssd1306.h"
 #include "lib/matriz/matriz_led.h"
 #include "lib/buzzer/buzzer.h"
-//include "wifi_secrets.h"
+#include "wifi_secrets.h"
 
 //Descomente as linhas abaixo e complete-as para fazer a conexão
 //#define WIFI_SSID "Sua rede"
@@ -99,7 +100,7 @@ int main(){
     adc_init();
     adc_set_temp_sensor_enabled(true);
 
-    set_modo(MODO_SONO);
+    set_modo(MODO_CONFORTO);
 
     while (true){
         cyw43_arch_poll(); // Necessário para manter o Wi-Fi ativo
@@ -111,6 +112,11 @@ int main(){
     cyw43_arch_deinit();
     return 0;
 }
+
+
+
+
+
 
 
 

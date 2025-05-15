@@ -85,14 +85,17 @@ void desligar_alarme() {
 //Deixa o som do alarme intermitente
 void alarme_loop() {
     static uint32_t ultima_execucao = 0;
-    uint32_t current_time = to_ms_since_boot(get_absolute_time());
+    uint32_t agora = to_ms_since_boot(get_absolute_time());
 
     if (!alarme_ativo) return;
 
-    // A cada 400ms, toca um bipe de 200ms
-    if (current_time - ultima_execucao >= 600) {
-        tocar_frequencia(600, 600); // 1000 Hz por 200 ms
-        ultima_execucao = current_time;
+    if (agora - ultima_execucao >= 600) {
+        tocar_frequencia(600, 600);
+        if (modo_atual == MODO_SEGURANCA) {
+            atualiza_display();
+            atualiza_matriz_leds();
+        }
+        ultima_execucao = agora;
     }
 }
 

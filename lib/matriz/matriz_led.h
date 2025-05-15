@@ -23,5 +23,6 @@ void update_leds(PIO pio_inst, uint sm_num);
 void exibir_padrao(uint8_t padrao);
 void alternar_leds();
 void animacao_festa_loop();
+void piscar_matriz_intruso(void);
 
 #endif

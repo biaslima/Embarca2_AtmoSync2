@@ -18,6 +18,7 @@ void atualiza_matriz_leds(void);
 void atualiza_buzzer(void);
 void atualiza_rgb_led(void);
 void executar_modulo_modos(void);
+bool detect_loud_noise(void);
 
 
 #endif

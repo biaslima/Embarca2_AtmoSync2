@@ -11,6 +11,9 @@
 #define BUZZER_PIN 21           
 #define LED_MATRIX_PIN 7
 
+#define MIC_THRESHOLD 2200
+#define MIC_SAMPLES 100
+
 //VARIÁVEIS DO DISPLAY
 #define I2C_PORT i2c1
 #define I2C_SDA 14
