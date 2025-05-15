@@ -19,6 +19,7 @@ void atualiza_buzzer(void);
 void atualiza_rgb_led(void);
 void executar_modulo_modos(void);
 bool detect_loud_noise(void);
+void atualizar_tempo_simulado();
 
 
 #endif

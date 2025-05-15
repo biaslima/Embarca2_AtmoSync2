@@ -13,20 +13,27 @@
 ssd1306_t ssd;
 ModoSistema modo_atual = MODO_CONFORTO;
 
+uint8_t hora_simulada = 12;
+uint8_t minuto_simulado = 0;
+uint8_t dia_simulado = 15;
+uint8_t mes_simulado = 5;
+uint16_t ano_simulado = 2025;
+
 //Executa os loops do modos
 void executar_modulo_modos() {
     if (modo_atual == MODO_SEGURANCA && detect_loud_noise()) {
         if (!alarme_ativo) {
-            printf("⚠️ Alarme ativado por ruído!\n");
+            printf("Alarme ativado por ruído!\n");
             tocar_alarme();
-            atualiza_display();  // Atualiza o display quando o alarme dispara
-            atualiza_matriz_leds();  // Atualiza a matriz LED quando o alarme dispara
+            atualiza_display();  
+            atualiza_matriz_leds();  
         }
     }
 
-    alarme_loop();     // Se alarme ativo, toca
-    animacao_festa_loop(); // Animação do modo festa
-    musica_festa_loop();   // Música do modo festa
+    alarme_loop();    
+    animacao_festa_loop(); 
+    musica_festa_loop();   
+    atualizar_tempo_simulado();
     
     sleep_ms(100);
 }
@@ -80,17 +87,31 @@ void atualiza_buzzer() {
 void atualiza_display() {
     ssd1306_fill(&ssd, false);
 
+    char buffer_data[16];
+    char buffer_hora[16];
+
+    // Se o modo for Segurança com alarme, mostrar "INTRUSO"
     if (modo_atual == MODO_SEGURANCA && alarme_ativo) {
-        ssd1306_draw_string(&ssd, "!!! INTRUSO !!!", 10, 20);
+        ssd1306_draw_string(&ssd, "!!! INTRUSO !!!", 13, 30);
         ssd1306_send_data(&ssd);
         return;
     }
 
+    if (modo_atual == MODO_SONO) {
+        sprintf(buffer_hora, "%02d:%02d", hora_simulada, minuto_simulado);
+        int x = (128 - strlen(buffer_hora) * 6) / 2; 
+        ssd1306_draw_string(&ssd, buffer_hora, x, 28);
+        ssd1306_send_data(&ssd);
+        return;
+    }
+
+    ssd1306_rect(&ssd, 0, 0, 128, 64, true, false);
+    ssd1306_hline(&ssd, 1, 126, 10, true);
+
+    // Nome do modo
     switch (modo_atual) {
         case MODO_CONFORTO:
             ssd1306_draw_string(&ssd, "Modo: Conforto", 5, 2);
-            ssd1306_draw_string(&ssd, "Status", 5, 2);
-
             break;
         case MODO_FESTA:
             ssd1306_draw_string(&ssd, "Modo: Festa", 5, 2);
@@ -98,10 +119,17 @@ void atualiza_display() {
         case MODO_SEGURANCA:
             ssd1306_draw_string(&ssd, "Modo: Seguranca", 5, 2);
             break;
-        case MODO_SONO:
-            ssd1306_draw_string(&ssd, "Modo: Sono", 5, 2);
+        default:
             break;
     }
+
+    // Hora e data
+    sprintf(buffer_data, "%02d/%02d/%04d", dia_simulado, mes_simulado, ano_simulado);
+    sprintf(buffer_hora, "%02d:%02d", hora_simulada, minuto_simulado);
+    ssd1306_draw_string(&ssd, buffer_data, 5, 20);
+    ssd1306_draw_string(&ssd, buffer_hora, 5, 32);
+    ssd1306_draw_string(&ssd, "Status: OK", 5, 48);
+
     ssd1306_send_data(&ssd);
 }
 
@@ -171,4 +199,18 @@ bool detect_loud_noise(void) {
 
     printf("Mic: Max %d | Avg %d\n", max_value, sum / MIC_SAMPLES);
     return (max_value > MIC_THRESHOLD);
+}
+
+void atualizar_tempo_simulado() {
+    static uint32_t ultima_atualizacao = 0;
+    uint32_t agora = to_ms_since_boot(get_absolute_time());
+
+    if (agora - ultima_atualizacao >= 60000) { // a cada 60s
+        ultima_atualizacao = agora;
+        minuto_simulado++;
+        if (minuto_simulado >= 60) {
+            minuto_simulado = 0;
+            hora_simulada = (hora_simulada + 1) % 24;
+        }
+    }
 }
